@@ -20,7 +20,9 @@ describe "#update_quality" do
     let(:items) {
       [
         Item.new("NORMAL ITEM", 5, 10),
-        Item.new("Aged Brie", 3, 10)
+        Item.new("Aged Brie", 3, 10),
+        Item.new("Sulfuras, Hand of Ragnaros", 80, nil),
+        Item.new("Backstage passes to a TAFKAL80ETC concert", 10, 10)
       ]
     }
 
@@ -38,6 +40,12 @@ describe "#update_quality" do
     it "decreases sell in for Aged Brie" do
       expect(items[1].sell_in).to eq(2)
     end
+    
+    it "Sulfuras quality is always 80" do
+      expect(items[2].quality).to eq(80)
+      expect(items[2].sell_in).to eq(nil)
+    end
+    
     
   end
 end
