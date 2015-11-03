@@ -10,7 +10,7 @@ describe "#update_quality" do
 
     before { update_quality([item]) }
 
-    it "decreases quality and sell in by one" do
+    it "decreases quality and sell_in by one" do
       expect(item.sell_in).to eq(initial_sell_in - 1)
       expect(item.quality).to eq(initial_quality - 1)
     end
@@ -22,7 +22,8 @@ describe "#update_quality" do
         Item.new("Backstage passes to a TAFKAL80ETC concert", 15, 10),
         Item.new("Backstage passes to a TAFKAL80ETC concert", 10, 10),
         Item.new("Backstage passes to a TAFKAL80ETC concert", 3, 10),
-        Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 10)
+        Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 10),
+        Item.new("Backstage passes to a TAFKAL80ETC concert", 2, 48),
       ]
     }
 
@@ -41,23 +42,33 @@ describe "#update_quality" do
       expect(items[2].quality).to eq(13)
     end
 
-    it "quality goes to 0 when concert has passed" do
+    it "sets quality to 0 when concert has passed" do
       expect(items[3].quality).to eq(0)
+    end
+
+    it "caps quality at 50" do
+      expect(items[4].quality).to eq(50)
     end
 
   end
 
   context "with aged brie items" do
-    let(:initial_sell_in) { 5 }
-    let(:initial_quality) { 10 }
-    let(:name) { "Aged Brie" }
-    let(:item) { Item.new(name, initial_sell_in, initial_quality) }
-
-    before { update_quality([item]) }
+    let(:items) {
+      [
+        Item.new("Aged Brie", 5, 10),
+        Item.new("Aged Brie", 3, 50)
+      ]
+    }
+    
+    before { update_quality(items) }
 
     it "increases quality and decreases sell_in" do
-      expect(item.sell_in).to eq(initial_sell_in - 1)
-      expect(item.quality).to eq(initial_quality + 1)
+      expect(items[0].sell_in).to eq(4)
+      expect(items[0].quality).to eq(11)
+    end
+    
+    it "quality does not increase above 50" do
+      expect(items[1].quality).to eq(50)
     end
   end
   
@@ -69,7 +80,7 @@ describe "#update_quality" do
 
     before { update_quality([item]) }
 
-    it "Sulfuras quality is always 80" do
+    it "keeps quality set at 80 and no sell_in" do
       expect(item.quality).to eq(80)
       expect(item.sell_in).to eq(nil)
     end
@@ -78,45 +89,14 @@ describe "#update_quality" do
   context "with conjured items" do
     let(:initial_sell_in) { 5 }
     let(:initial_quality) { 10 }
-    let(:name) { "item" }
+    let(:name) { "Conjured" }
     let(:item) { Item.new(name, initial_sell_in, initial_quality) }
 
     before { update_quality([item]) }
 
-    it "decreases quality and sell in by one" do
+    it "decreases quality by two and sell_in by one" do
       expect(item.sell_in).to eq(initial_sell_in - 1)
-      expect(item.quality).to eq(initial_quality - 1)
-    end
-  end
-
-  context "with multiple items" do
-    let(:items) {
-      [
-        Item.new("NORMAL ITEM", 5, 10),
-        Item.new("Aged Brie", 3, 10),
-        Item.new("Sulfuras, Hand of Ragnaros", 80, nil),
-        Item.new("Backstage passes to a TAFKAL80ETC concert", 15, 10),
-        Item.new("Backstage passes to a TAFKAL80ETC concert", 10, 10),
-        Item.new("Backstage passes to a TAFKAL80ETC concert", 3, 10),
-        Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 10),
-        Item.new("Conjured", 10, 10)
-      ]
-    }
-
-    before { update_quality(items) }
-
-    it "decreases quality and sell in for normal item" do
-      expect(items[0].quality).to eq(9)
-      expect(items[0].sell_in).to eq(4)
-    end
-    
-    it "Aged Brie" do
-      expect(items[1].quality).to eq(11)
-      expect(items[1].sell_in).to eq(2)
-    end
-    
-    it "Conjured items quality decreases by two" do
-      expect(items[7].quality).to eq(8)
+      expect(item.quality).to eq(initial_quality - 2)
     end
   end
 end
