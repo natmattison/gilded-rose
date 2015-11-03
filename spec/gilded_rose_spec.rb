@@ -10,8 +10,9 @@ describe "#update_quality" do
 
     before { update_quality([item]) }
 
-    it "your specs here" do
-      pending
+    it "decreases quality and sell in by one" do
+      expect(item.sell_in).to eq(initial_sell_in - 1)
+      expect(item.quality).to eq(initial_quality - 1)
     end
   end
 
@@ -19,14 +20,24 @@ describe "#update_quality" do
     let(:items) {
       [
         Item.new("NORMAL ITEM", 5, 10),
-        Item.new("Aged Brie", 3, 10),
+        Item.new("Aged Brie", 3, 10)
       ]
     }
 
     before { update_quality(items) }
 
-    it "your specs here" do
-      pending
+    it "decreases quality and sell in for normal item" do
+      expect(items[0].quality).to eq(9)
+      expect(items[0].sell_in).to eq(4)
     end
+    
+    it "increases quality for Aged Brie" do
+      expect(items[1].quality).to eq(11)
+    end
+    
+    it "decreases sell in for Aged Brie" do
+      expect(items[1].sell_in).to eq(2)
+    end
+    
   end
 end
