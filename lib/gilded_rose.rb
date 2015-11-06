@@ -5,27 +5,28 @@ def update_quality(items)
       item.sell_in = nil
       next
     end
-    if item.name == 'Aged Brie'
-      item.quality += 1
-    elsif item.name == 'Backstage passes to a TAFKAL80ETC concert'
-      if item.sell_in <= 0
-        item.quality = 0
-      elsif item.sell_in <= 6
-        item.quality += 3
-      elsif item.sell_in <= 11
-        item.quality += 2
-      else
-        item.quality += 1
-      end
-    elsif item.name == 'Conjured'
-      quality_decrease = item.sell_in < 0 ? 4 : 2
-      item.quality -= quality_decrease
-    else # normal items
-      quality_decrease = item.sell_in < 0 ? 2 : 1
-      item.quality -= quality_decrease
-    end
     
     item.sell_in -= 1
+    
+    if item.name == 'Aged Brie'
+      quality_change = 1
+    elsif item.name == 'Backstage passes to a TAFKAL80ETC concert'
+      if item.sell_in <= 0
+        quality_change = -item.quality
+      elsif item.sell_in <= 5
+        quality_change = 3
+      elsif item.sell_in <= 10
+        quality_change = 2
+      else
+        quality_change = 1
+      end
+    elsif item.name == 'Conjured'
+      quality_change = item.sell_in < 0 ? -4 : -2
+    else # normal items
+      quality_change = item.sell_in < 0 ? -2 : -1
+    end
+    
+    item.quality += quality_change
     
     # enforce 0 < quality < 50
     if item.quality > 50
