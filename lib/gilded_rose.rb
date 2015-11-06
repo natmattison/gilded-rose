@@ -7,27 +7,27 @@ def update_quality(items)
     end
     if item.name == 'Aged Brie'
       item.quality += 1
-      item.sell_in -= 1
     elsif item.name == 'Backstage passes to a TAFKAL80ETC concert'
-      item.sell_in -= 1
-      if item.sell_in < 0
+      if item.sell_in <= 0
         item.quality = 0
-      elsif item.sell_in <= 5
+      elsif item.sell_in <= 6
         item.quality += 3
-      elsif item.sell_in <= 10
+      elsif item.sell_in <= 11
         item.quality += 2
       else
         item.quality += 1
       end
     elsif item.name == 'Conjured'
-      item.sell_in -= 1
-      item.quality -= 2
+      quality_decrease = item.sell_in < 0 ? 4 : 2
+      item.quality -= quality_decrease
     else # normal items
-      item.quality -= 1
-      item.sell_in -= 1
+      quality_decrease = item.sell_in < 0 ? 2 : 1
+      item.quality -= quality_decrease
     end
     
-    # enforcing 0 < quality < 50
+    item.sell_in -= 1
+    
+    # enforce 0 < quality < 50
     if item.quality > 50
       item.quality = 50
     elsif item.quality < 0

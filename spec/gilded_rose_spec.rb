@@ -2,17 +2,23 @@ require_relative '../lib/gilded_rose'
 
 describe "#update_quality" do
 
-  context "with a single normal item" do
-    let(:initial_sell_in) { 5 }
-    let(:initial_quality) { 10 }
-    let(:name) { "item" }
-    let(:item) { Item.new(name, initial_sell_in, initial_quality) }
+  context "with normal items" do
+    let(:items) {
+      [
+        Item.new("Normal item", 5, 10),
+        Item.new("Normal item", -1, 10)
+      ]
+    }
 
-    before { update_quality([item]) }
+    before { update_quality(items) }
 
     it "decreases quality and sell_in by one" do
-      expect(item.sell_in).to eq(initial_sell_in - 1)
-      expect(item.quality).to eq(initial_quality - 1)
+      expect(items[0].sell_in).to eq(4)
+      expect(items[0].quality).to eq(9)
+    end
+    
+    it "decreases quality by two when sell_in is negative" do
+      expect(items[1].quality).to eq(8)
     end
   end
 
@@ -20,8 +26,8 @@ describe "#update_quality" do
     let(:items) {
       [
         Item.new("Backstage passes to a TAFKAL80ETC concert", 15, 10),
-        Item.new("Backstage passes to a TAFKAL80ETC concert", 10, 10),
-        Item.new("Backstage passes to a TAFKAL80ETC concert", 3, 10),
+        Item.new("Backstage passes to a TAFKAL80ETC concert", 11, 10),
+        Item.new("Backstage passes to a TAFKAL80ETC concert", 6, 10),
         Item.new("Backstage passes to a TAFKAL80ETC concert", 0, 10),
         Item.new("Backstage passes to a TAFKAL80ETC concert", 2, 48),
       ]
@@ -34,11 +40,11 @@ describe "#update_quality" do
       expect(items[0].sell_in).to eq(14)
     end
 
-    it "increases quality by 2 when 5 < sell_in < 10" do
+    it "increases quality by 2 when 5 < sell_in <= 10" do
       expect(items[1].quality).to eq(12)
     end
 
-    it "increases quality by 3 when 0 < sell_in < 5" do
+    it "increases quality by 3 when 0 < sell_in <= 5" do
       expect(items[2].quality).to eq(13)
     end
 
@@ -86,17 +92,28 @@ describe "#update_quality" do
     end
   end
   
-  context "with conjured items" do
-    let(:initial_sell_in) { 5 }
-    let(:initial_quality) { 10 }
-    let(:name) { "Conjured" }
-    let(:item) { Item.new(name, initial_sell_in, initial_quality) }
-
-    before { update_quality([item]) }
+  context "with Conjured items" do
+    let(:items) {
+      [
+        Item.new("Conjured", 5, 10),
+        Item.new("Conjured", 1, 1),
+        Item.new("Conjured", -1, 10)
+      ]
+    }
+    
+    before { update_quality(items) }
 
     it "decreases quality by two and sell_in by one" do
-      expect(item.sell_in).to eq(initial_sell_in - 1)
-      expect(item.quality).to eq(initial_quality - 2)
+      expect(items[0].sell_in).to eq(4)
+      expect(items[0].quality).to eq(8)
+    end
+    
+    it "decreases quality by four when sell_in is negative" do
+      expect(items[2].quality).to eq(6)
+    end
+    
+    it "does not allow quality to be negative" do
+      expect(items[1].quality).to eq(0)
     end
   end
 end
